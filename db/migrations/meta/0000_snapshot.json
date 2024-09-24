@@ -1,9 +1,72 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "618607fb-bacc-40ac-9263-a1d6b1fd1e53",
+  "id": "25f15c65-b56d-43ee-b549-6093fa97ac69",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "posts": {
+      "name": "posts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "posts_user_id_users_id_fk": {
+          "name": "posts_user_id_users_id_fk",
+          "tableFrom": "posts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "users": {
       "name": "users",
       "schema": "",
@@ -21,24 +84,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "discriminator": {
-          "name": "discriminator",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "email": {
           "name": "email",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
-        },
-        "note": {
-          "name": "note",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "''"
         },
         "created_at": {
           "name": "created_at",
@@ -59,13 +109,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_discriminator_unique": {
-          "name": "users_discriminator_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "discriminator"
-          ]
-        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
