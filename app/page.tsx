@@ -1,69 +1,49 @@
-"use client";
-import { useState } from "react";
+import { CreatePost } from "@/app/action";
+import { db } from "@/db/db";
+import { posts } from "@/db/schema";
 
-const insertUser = async (userData: {
-  name: string;
-  email: string;
-  discriminator: string;
-}) => {
-  try {
-    const response = await fetch("/api/v1/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
+export default async function Page() {
+  const data = await db.select().from(posts);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      if (response.status === 400) {
-        console.error("Validation error:", errorData.validateError);
-      } else if (response.status === 409) {
-        console.error("Unique constraint error:", errorData.constraintError);
-      } else {
-        console.error("Unexpected error:", errorData.error);
-      }
-    } else {
-      const result = await response.json();
-      console.log("User inserted successfully:", result.data);
-    }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
-
-export default function UserForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [discriminator, setDiscriminator] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await insertUser({ name, email, discriminator });
-  };
+  console.log({ data });
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Discriminator"
-        value={discriminator}
-        onChange={(e) => setDiscriminator(e.target.value)}
-      />
-      <button type="submit">Submit</button>
-    </form>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">TODO List</h1>
+      <form action={CreatePost} className="mb-4">
+        <input
+          type="text"
+          placeholder="Title"
+          className="border p-2 mr-2"
+          name="title"
+        />
+
+        <input
+          type="text"
+          placeholder="Content"
+          className="border p-2 mr-2"
+          name="content"
+        />
+        <button type="submit" className="bg-blue-500 text-white p-2">
+          Add Post
+        </button>
+      </form>
+      <ul>
+        {data.map((task) => (
+          <li key={task.id} className="flex justify-between items-center mb-2">
+            <span>タイトル: {task.title}</span>
+            <span>コンテンツ: {task.content}</span>
+            <div>
+              <button className="bg-red-500 text-white p-2 mr-2" type="submit">
+                Delete
+              </button>
+              <button className="bg-yellow-500 text-white p-2" type="submit">
+                Update
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
