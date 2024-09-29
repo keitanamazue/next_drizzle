@@ -2,14 +2,12 @@ import { db } from "@/db/db";
 import { users } from "@/db/schema";
 import { CreateUser, handleSubmit } from "@/app/action";
 
-export default function Page() {
-  // useEffect(() => {
-  //   const fetchTasks = async () => {
-  //     const tasksRes = await db.select().from(users);
-  //     setTasks(tasksRes);
-  //   };
-  //   fetchTasks();
-  // }, []);
+export default async function Page() {
+  const fetchTasks = async () => {
+    const tasksRes = await db.select().from(users);
+    return tasksRes;
+  };
+  const todos = await fetchTasks();
 
   // const handleAddTask = async (e) => {
   //   e.preventDefault();

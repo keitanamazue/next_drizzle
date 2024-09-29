@@ -2,6 +2,7 @@
 
 import { db } from "@/db/db";
 import { posts, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export const CreateUser = async (formData: FormData) => {
@@ -9,15 +10,11 @@ export const CreateUser = async (formData: FormData) => {
     name: formData.get("name"),
     email: formData.get("email"),
   };
-  console.log({ rawFormData });
-  console.log("hello,world");
 
   const usersRes = await db.insert(users).values(rawFormData).returning({
     name: users.name,
     email: users.email,
   });
-
-  console.log({ usersRes });
 };
 
 export const CreatePost = async (formData: FormData) => {
@@ -26,7 +23,6 @@ export const CreatePost = async (formData: FormData) => {
     title: formData.get("title"),
     content: formData.get("content"),
   };
-  console.log({ rawFormData });
 
   const usersRes = await db.insert(posts).values(rawFormData).returning({
     userId: posts.userId, // 修正: user_id -> userId
@@ -34,9 +30,20 @@ export const CreatePost = async (formData: FormData) => {
     content: posts.content, // 修正: email -> content
   });
 
-  console.log({ usersRes });
-
   formData.set("title", "");
   formData.set("content", "");
   redirect("/");
+};
+
+export const DeletePost = async (formData: FormData) => {
+  const deleteId = formData.get("id");
+
+  const deletedId = await db
+    .delete(posts)
+    .where(eq(posts.id, deleteId as string)) // 型キャストを追加
+    .returning({ deletedId: posts.id });
+
+  redirect("/");
+
+  return deletedId;
 };

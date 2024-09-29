@@ -110,7 +110,6 @@ export async function PATCH(
       .update(users)
       .set(validUpdateUser.data)
       .where(eq(users.discriminator, params.discriminator));
-    console.log(res);
     if (res.rowCount === 0) {
       return NextResponse.json(
         {
